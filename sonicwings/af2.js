@@ -23,8 +23,9 @@ const level = {
 	livesOffset: 8,
 	bombOffset: 16,
 	creditOffset: 7,
+	scrollOffset: 0,
 	scrollSpeed: 0.5,
-	scrollPos: 550.5,// 1929 // 2321
+	scrollPos: 590.5,// 1929 // 2321
 	powerCount: 0,
 	buildungCount: 0,
 	buildingInc: 1,
@@ -1440,7 +1441,7 @@ const player = {
 	width: 21,
 	height: 31,
 	tiltCount: 0,
-	projectileSpeed: 8,
+	projectileSpeed: 1,
 	projectileCounter: 0,
 	firingSpecial: false,
 	specialCount: 0,
@@ -1551,8 +1552,7 @@ const player = {
 	drawProjectiles: function (x, y, offset, w, index) {
 		ctx.save();
 
-		if (this.power == 2) {
-			
+		if (this.power == 2) {	
 			if (w == 14) {
 				ctx.translate(-7, -16.5);
 			}
@@ -1691,38 +1691,36 @@ const player = {
 	craftCollision: function (x, y, w, h, dx, dy) {
 
 		for (let i = 0; i < enemies.projectilesOnScreen.length; i++) {
-console.log(enemies.projectilesOnScreen)
-			if (x + Math.floor(w / dx) > enemies.projectilesOnScreen[1] - Math.floor(enemies.projectilesOnScreen[3] / 2) &&
-				x - Math.floor(w / dx) < enemies.projectilesOnScreen[1] + Math.floor(enemies.projectilesOnScreen[3] / 2) &&
-				y - Math.floor(h / dy) < enemies.projectilesOnScreen[2] + Math.floor(enemies.projectilesOnScreen[4] / 2) &&
-				y + Math.floor(h / dy) > enemies.projectilesOnScreen[2] - Math.floor(enemies.projectilesOnScreen[4] / 2)) {
-console.log("projectile hit")
+			if (x + Math.floor(w / dx) > enemies.projectilesOnScreen[i][1] - Math.floor(enemies.projectilesOnScreen[i][3] / 2) &&
+				x - Math.floor(w / dx) < enemies.projectilesOnScreen[i][1] + Math.floor(enemies.projectilesOnScreen[i][3] / 2) &&
+				y - Math.floor(h / dy) < enemies.projectilesOnScreen[i][2] + Math.floor(enemies.projectilesOnScreen[i][4] / 2) &&
+				y + Math.floor(h / dy) > enemies.projectilesOnScreen[i][2] - Math.floor(enemies.projectilesOnScreen[i][4] / 2)) {
+
 				player.hitCoords[0] = x;
 				player.hitCoords[1] = y;
-				enemies.projectilesOnScreen[5] = false;
-				enemies.projectilesOnScreen[1] = undefined;
+				enemies.projectilesOnScreen[i][5] = false;
+				enemies.projectilesOnScreen[i][1] = undefined;
 			}
 		}
 
-		/*enemies.projectilesOnScreen.forEach(function (projectile){
+		enemies.projectilesOnScreen.forEach(function (projectile){
 			if (x + Math.floor(w / dx) > projectile[1] - Math.floor(projectile[3] / 2) &&
 				x - Math.floor(w / dx) < projectile[1] + Math.floor(projectile[3] / 2) &&
 				y - Math.floor(h / dy) < projectile[2] + Math.floor(projectile[4] / 2) &&
 				y + Math.floor(h / dy) > projectile[2] - Math.floor(projectile[4] / 2)) {
-console.log("projectile hit")
+
 				player.hitCoords[0] = x;
 				player.hitCoords[1] = y;
 				projectile[5] = false;
 				projectile[1] = undefined;
 			}
-		});*/
+		});
 
 		enemies.unitsOnScreen.forEach(function (unit){
 			if (x + Math.floor(w / dx) > unit[1] - Math.floor(unit[3] / 2) &&
 				x - Math.floor(w / dx) < unit[1] + Math.floor(unit[3] / 2) &&
 				y - Math.floor(h / dy) < unit[2] + Math.floor(unit[4] / 2) &&
 				y + Math.floor(h / dy) > unit[2] - Math.floor(unit[4] / 2)) {
-console.log("enemy hit")
 				player.hitCoords[0] = x;
 				player.hitCoords[1] = y;
 				unit[3] = 0;
@@ -2118,6 +2116,9 @@ const enemies = {
 	headPattern: false,
 	turretsPattern: false,
 	projectilesDisplayed: 0,
+	drawingProjectile: false,
+	projectileWidth: [0],
+	projectileHeight: [0],
 	projectileCounter1: 0,
 	projectileCounter2: 0,
 	projectileCounter3: 0,
@@ -3143,7 +3144,7 @@ const enemies = {
 	drawProjectile: function (x, y, type) {
 		ctx.save();
 		
-		if (x < 314 || x > -10 || y < 230 || y > -10) {
+		if (x < 314 || x > -10 || y < 230 || y > -10 && this.drawingProjectile == true) {
 			if (type == 1) {
 				if (this.projectilesDisplayed == 1) {
 					this.projectileCounter1++
@@ -3169,17 +3170,26 @@ const enemies = {
 
 				if (this.projectileCounter1 < 6) {
 					ctx.translate(-3, -2);
-					ctx.drawImage(en, 257, 159, 6, 4, x, y, 6, 4)
+					ctx.drawImage(en, 257, 159, 6, 4, x, y, 6, 4);
+					this.projectileWidth[0] = 6;
+					this.projectileHeight[0] = 4;
 				} else if (this.projectileCounter1 >= 6 && this.projectileCounter1 < 11) {
 					ctx.translate(-2, -2);
-					ctx.drawImage(en, 264, 159, 4, 4, x, y, 4, 4)
+					ctx.drawImage(en, 264, 159, 4, 4, x, y, 4, 4);
+					this.projectileWidth[0] = 4;
+					this.projectileHeight[0] = 4;
 				} else if (this.projectileCounter1 >= 11 && this.projectileCounter1 < 16) {
 					ctx.translate(-2, -3);
-					ctx.drawImage(en, 269, 159, 4, 6, x, y, 4, 6)
+					ctx.drawImage(en, 269, 159, 4, 6, x, y, 4, 6);
+					this.projectileWidth[0] = 4;
+					this.projectileHeight[0] = 6;
 				} else if (this.projectileCounter1 >= 16 && this.projectileCounter1 < 21) {
 					ctx.translate(-2, -2);
-					ctx.drawImage(en, 274, 159, 4, 4, x, y, 4, 4)
+					ctx.drawImage(en, 274, 159, 4, 4, x, y, 4, 4);
+					this.projectileWidth[0] = 4;
+					this.projectileHeight[0] = 4;
 				}
+
 			} else if (type == 2) {
 				if (this.projectilesDisplayed == 1) {
 					this.projectileCounter2++
@@ -3205,16 +3215,24 @@ const enemies = {
 				
 				if (this.projectileCounter2 < 6) {
 					ctx.translate(-4, -4);
-					ctx.drawImage(en, 257, 148, 8, 8, x, y, 8, 8)
+					ctx.drawImage(en, 257, 148, 8, 8, x, y, 8, 8);
+					this.projectileWidth[0] = 8;
+					this.projectileHeight[0] = 8;
 				} else if (this.projectileCounter2 >= 6 && this.projectileCounter2 < 11) {
 					ctx.translate(-5, -5);
-					ctx.drawImage(en, 266, 148, 10, 10, x, y, 10, 10)
+					ctx.drawImage(en, 266, 148, 10, 10, x, y, 10, 10);
+					this.projectileWidth[0] = 10
+					this.projectileHeight[0] = 10;
 				} else if (this.projectileCounter2 >= 11 && this.projectileCounter2 < 16) {
 					ctx.translate(-5, -5);
-					ctx.drawImage(en, 277, 148, 10, 10, x, y, 10, 10)
+					ctx.drawImage(en, 277, 148, 10, 10, x, y, 10, 10);
+					this.projectileWidth[0] = 10
+					this.projectileHeight[0] = 10;
 				} else if (this.projectileCounter2 >= 16 && this.projectileCounter2 < 21) {
 					ctx.translate(-4, -4);
-					ctx.drawImage(en, 288, 148, 8, 8, x, y, 8, 8)
+					ctx.drawImage(en, 288, 148, 8, 8, x, y, 8, 8);
+					this.projectileWidth[0] = 8;
+					this.projectileHeight[0] = 8;
 				}
 			} else if (type == 3) {
 				if (this.projectilesDisplayed == 1) {
@@ -3241,16 +3259,24 @@ const enemies = {
 				
 				if (this.projectileCounter3 < 6) {
 					ctx.translate(-5, -5);
-					ctx.drawImage(en, 257, 133, 10, 10, x, y, 10, 10)
+					ctx.drawImage(en, 257, 133, 10, 10, x, y, 10, 10);
+					this.projectileWidth[0] = 10
+					this.projectileHeight[0] = 10;
 				} else if (this.projectileCounter3 >= 6 && this.projectileCounter3 < 11) {
 					ctx.translate(-4, -7);
-					ctx.drawImage(en, 268, 133, 8, 14, x, y, 8, 14)
+					ctx.drawImage(en, 268, 133, 8, 14, x, y, 8, 14);
+					this.projectileWidth[0] = 8;
+					this.projectileHeight[0] = 14;
 				} else if (this.projectileCounter3 >= 11 && this.projectileCounter3 < 16) {
 					ctx.translate(-5, -5);
-					ctx.drawImage(en, 277, 133, 10, 10, x, y, 10, 10)
+					ctx.drawImage(en, 277, 133, 10, 10, x, y, 10, 10);
+					this.projectileWidth[0] = 10
+					this.projectileHeight[0] = 10;
 				} else if (this.projectileCounter3 >= 16 && this.projectileCounter3 < 21) {
 					ctx.translate(-7, -4);
-					ctx.drawImage(en, 288, 133, 14, 8, x, y, 14, 8)
+					ctx.drawImage(en, 288, 133, 14, 8, x, y, 14, 8);
+					this.projectileWidth[0] = 14
+					this.projectileHeight[0] = 8;
 				}
 			}
 		}
@@ -3267,6 +3293,19 @@ const enemies = {
 
 		if (this.projectileCounter3 >= 20) {
 			this.projectileCounter3 = 0;
+		}
+
+		this.projectileCollision(x, y, this.projectileWidth[0], this.projectileHeight[0], 2, 2);
+	},
+	projectileCollision: function (x, y, w, h, dx, dy) {
+		if (x + Math.floor(w / dx) > player.x - Math.floor(4 / 2) &&
+			x - Math.floor(w / dx) < player.x + Math.floor(4 / 2) &&
+			y - Math.floor(h / dy) < player.y + Math.floor(player.height / 2) &&
+			y + Math.floor(h / dy) > player.y - Math.floor(player.height / 2)) {
+			player.hitCoords[0] = x;
+			player.hitCoords[1] = y;
+			enemies.projectilesOnScreen[i][5] = false;
+			enemies.projectilesOnScreen[i][1] = undefined;
 		}
 	},
 	patternHeliS1: function (index) {
@@ -3802,16 +3841,16 @@ const controlls = {
 					player.projectileCollision(controlls.projectilePositionX2, controlls.projectilePositionY2, 9, 33, 4, 2, 1);
 
 					if (player.power == 2) {
-						player.drawProjectiles(controlls.projectilePositionX2, controlls.projectilePositionY2, 277, 14);
+						player.drawProjectiles(controlls.projectilePositionX2, controlls.projectilePositionY2, 277, 14, 2);
 						controlls.projectilePositionY2 -= player.projectileSpeed;
 					} else if (player.power == 3) {
-						player.drawProjectiles(controlls.projectilePositionX2, controlls.projectilePositionY2, 325, 15);
-						player.drawProjectiles(controlls.projectilePositionX2, controlls.projectilePositionY2, 390, 14);
+						player.drawProjectiles(controlls.projectilePositionX2, controlls.projectilePositionY2, 325, 15, 2);
+						player.drawProjectiles(controlls.projectilePositionX2, controlls.projectilePositionY2, 390, 14, 2);
 						controlls.projectilePositionY2 -= player.projectileSpeed;
 					} else if (player.power == 4) {
-						player.drawProjectiles(controlls.projectilePositionX2, controlls.projectilePositionY2, 325, 15);
-						player.drawProjectiles(controlls.projectilePositionX2, controlls.projectilePositionY2 - 10, 277, 14);
-						player.drawProjectiles(controlls.projectilePositionX2, controlls.projectilePositionY2, 390, 14);
+						player.drawProjectiles(controlls.projectilePositionX2, controlls.projectilePositionY2, 325, 15, 2);
+						player.drawProjectiles(controlls.projectilePositionX2, controlls.projectilePositionY2 - 10, 277, 14, 2);
+						player.drawProjectiles(controlls.projectilePositionX2, controlls.projectilePositionY2, 390, 14, 2);
 						controlls.projectilePositionY2 -= player.projectileSpeed;
 					} else {
 						player.drawProjectiles(controlls.projectilePositionX2, controlls.projectilePositionY2, 0, 0);
@@ -3827,16 +3866,16 @@ const controlls = {
 					player.projectileCollision(controlls.projectilePositionX3, controlls.projectilePositionY3, 9, 33, 4, 2, 2);
 
 					if (player.power == 2) {
-						player.drawProjectiles(controlls.projectilePositionX3, controlls.projectilePositionY3, 277, 14);
+						player.drawProjectiles(controlls.projectilePositionX3, controlls.projectilePositionY3, 277, 14, 3);
 						controlls.projectilePositionY3 -= player.projectileSpeed;
 					} else if (player.power == 3) {
-						player.drawProjectiles(controlls.projectilePositionX3, controlls.projectilePositionY3, 325, 15);
-						player.drawProjectiles(controlls.projectilePositionX3, controlls.projectilePositionY3, 390, 14);
+						player.drawProjectiles(controlls.projectilePositionX3, controlls.projectilePositionY3, 325, 15, 3);
+						player.drawProjectiles(controlls.projectilePositionX3, controlls.projectilePositionY3, 390, 14, 3);
 						controlls.projectilePositionY3 -= player.projectileSpeed;
 					} else if (player.power == 4) {
-						player.drawProjectiles(controlls.projectilePositionX3, controlls.projectilePositionY3, 325, 15);
-						player.drawProjectiles(controlls.projectilePositionX3, controlls.projectilePositionY3 - 10, 277, 14);
-						player.drawProjectiles(controlls.projectilePositionX3, controlls.projectilePositionY3, 390, 14);
+						player.drawProjectiles(controlls.projectilePositionX3, controlls.projectilePositionY3, 325, 15, 3);
+						player.drawProjectiles(controlls.projectilePositionX3, controlls.projectilePositionY3 - 10, 277, 14, 3);
+						player.drawProjectiles(controlls.projectilePositionX3, controlls.projectilePositionY3, 390, 14, 3);
 						controlls.projectilePositionY3 -= player.projectileSpeed;
 					} else {
 						player.drawProjectiles(controlls.projectilePositionX3, controlls.projectilePositionY3, 0, 0);
@@ -3852,16 +3891,16 @@ const controlls = {
 					player.projectileCollision(controlls.projectilePositionX4, controlls.projectilePositionY4, 9, 33, 4, 2, 3);
 
 					if (player.power == 2) {
-						player.drawProjectiles(controlls.projectilePositionX4, controlls.projectilePositionY4, 277, 14);
+						player.drawProjectiles(controlls.projectilePositionX4, controlls.projectilePositionY4, 277, 14, 4);
 						controlls.projectilePositionY4 -= player.projectileSpeed;
 					} else if (player.power == 3) {
-						player.drawProjectiles(controlls.projectilePositionX4, controlls.projectilePositionY4, 325, 15);
-						player.drawProjectiles(controlls.projectilePositionX4, controlls.projectilePositionY4, 390, 14);
+						player.drawProjectiles(controlls.projectilePositionX4, controlls.projectilePositionY4, 325, 15, 4);
+						player.drawProjectiles(controlls.projectilePositionX4, controlls.projectilePositionY4, 390, 14, 4);
 						controlls.projectilePositionY4 -= player.projectileSpeed;
 					} else if (player.power == 4) {
-						player.drawProjectiles(controlls.projectilePositionX4, controlls.projectilePositionY4, 325, 15);
-						player.drawProjectiles(controlls.projectilePositionX4, controlls.projectilePositionY4 - 10, 277, 14);
-						player.drawProjectiles(controlls.projectilePositionX4, controlls.projectilePositionY4, 390, 14);
+						player.drawProjectiles(controlls.projectilePositionX4, controlls.projectilePositionY4, 325, 15, 4);
+						player.drawProjectiles(controlls.projectilePositionX4, controlls.projectilePositionY4 - 10, 277, 14, 4);
+						player.drawProjectiles(controlls.projectilePositionX4, controlls.projectilePositionY4, 390, 14, 4);
 						controlls.projectilePositionY4 -= player.projectileSpeed;
 					} else {
 						player.drawProjectiles(controlls.projectilePositionX4, controlls.projectilePositionY4, 0, 0);
